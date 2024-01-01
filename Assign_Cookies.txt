@@ -1,0 +1,33 @@
+class Solution {
+    public int findContentChildren(int[] g, int[] s) {
+        Arrays.sort(g);
+        Arrays.sort(s);
+        int count = 0, startIndex = 0, endIndex = g.length -1, ite = 0;
+
+        while(ite < s.length && startIndex <= endIndex){
+            int size = s[ite];
+            int indexOfLowestGreed = getLowestGreed(g, size, startIndex, endIndex);
+            if (indexOfLowestGreed >= startIndex){
+                count += (Math.min(indexOfLowestGreed - startIndex + 1, s.length - ite));
+                ite += (indexOfLowestGreed - startIndex);
+                startIndex = indexOfLowestGreed + 1;
+            }
+            ite++;
+        }
+        return count;
+    }
+
+    int getLowestGreed(int [] greed, int sizeOfCookie, int start, int end){
+        
+        while (start < end){
+            int mid = start + (end - start)/2;
+            if (greed[mid] < sizeOfCookie){
+                start = mid + 1;
+            }
+            else{
+                end = mid - 1;
+            }
+        }
+        return greed[start] > sizeOfCookie ? start - 1 : start;
+    }
+}

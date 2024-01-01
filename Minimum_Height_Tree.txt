@@ -1,0 +1,58 @@
+class Solution {
+    public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        ArrayList<Node> listOfNodes = new ArrayList<>();
+        for (int i =0;i<n;i++)
+            listOfNodes.add(new Node(i));
+        for (int i = 0;i<edges.length;i++){
+            int to = edges[i][0], from = edges[i][1];
+            listOfNodes.get(to).neighbours.add(from);
+            listOfNodes.get(from).neighbours.add(to);
+        }
+        Queue<Integer> leaveNodes = new LinkedList();
+        for (int i =0;i<n;i++){
+            if (listOfNodes.get(i).neighbours.size() <= 1)
+                leaveNodes.add(i);
+        }
+
+        while(n > 2){
+            Queue <Integer> newLeaveNodes = new LinkedList<>();
+            n -= leaveNodes.size();
+            while(leaveNodes.size() > 0){
+                int leaveIndex = leaveNodes.poll();
+                Node leaveNode = listOfNodes.get(leaveIndex);
+                if (leaveNode.neighbours.iterator().hasNext()){
+                    int parentIndex = leaveNode.neighbours.iterator().next();
+                    Node parentNode = listOfNodes.get(parentIndex);
+                    parentNode.neighbours.remove(leaveIndex);
+                    if (parentNode.neighbours.size() == 1)
+                        newLeaveNodes.add(parentIndex);
+                }
+            }
+            leaveNodes = newLeaveNodes;
+        }
+
+        ArrayList<Integer> output = new ArrayList<>();
+        while(leaveNodes.size() > 0)
+            output.add(leaveNodes.poll());
+        return output;
+
+    }
+
+    class Node {
+        int index;
+        HashSet<Integer> neighbours;
+        Node(int index){
+            this.index = index;
+            neighbours = new HashSet<>();
+        }
+    }
+}
+
+
+// Think of Path Graph (Graph where nodes are in straight line) and how the longest path in a graph is a straight line.
+
+// When we want to find the shortest height it will be the middle nodes in the graph.
+
+// You can think about a similar approach here where height will be minimum when the nodes are the most central.
+
+// So think about topological sort and how we can strat with leaf nodes and make nodes leave while moving inwards.

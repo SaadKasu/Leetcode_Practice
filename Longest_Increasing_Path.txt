@@ -1,0 +1,42 @@
+class Solution {
+    public int longestIncreasingPath(int[][] matrix) {
+        Node [][] nodeMatrix = new Node[matrix.length][matrix[0].length];
+
+        for (int i = 0;i<matrix.length;i++)
+            for (int j = 0;j<matrix[i].length;j++)
+                nodeMatrix[i][j] = new Node(matrix[i][j],i,j);
+        int ans = 0;
+        for (int i = 0;i<nodeMatrix.length;i++)
+            for (int j =0;j<nodeMatrix[i].length;j++){
+                 ans = Math.max(ans, getMaxLengthForNode(nodeMatrix[i][j],nodeMatrix));
+            }
+        return ans;
+    }
+
+    class Node {
+        int value, row, column, maxLength;
+        ArrayList<Node> validNeighbours;
+        Node(int v, int r, int c){
+            value = v;
+            row = r;
+            column = c;
+            validNeighbours = new ArrayList<>();
+            maxLength = 0;
+        }
+    }
+
+    int getMaxLengthForNode(Node node, Node [][] nodeMatrix){
+        if (node.maxLength != 0)
+            return node.maxLength;
+        int [] rowIncrement = new int []{-1,1,0,0};
+        int [] columnIncrement = new int [] {0,0,-1,1};
+
+        for (int i =0 ;i<4;i++){
+            int nextRow = node.row + rowIncrement[i];
+            int nextColumn = node.column + columnIncrement[i];
+            if (nextRow >= 0 && nextColumn >= 0 && nextRow < nodeMatrix.length && nextColumn < nodeMatrix[nextRow].length && node.value < nodeMatrix[nextRow][nextColumn].value)
+            node.maxLength = Math.max(node.maxLength, getMaxLengthForNode(nodeMatrix[nextRow][nextColumn],nodeMatrix));
+        }
+        return ++node.maxLength;
+    }
+}

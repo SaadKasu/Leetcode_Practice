@@ -1,0 +1,42 @@
+class Solution {
+    public List<String> findItinerary(List<List<String>> tickets) {
+        ArrayList<String> output = new ArrayList<>();
+        HashMap<String, Airport> airportByName = new HashMap<>();
+        for (List<String> airportNames : tickets){
+            String from = airportNames.get(0);
+            String to = airportNames.get(1);
+            if (!airportByName.containsKey(from)){
+                airportByName.put(from, new Airport(from));
+            }
+            if (!airportByName.containsKey(to)){
+                airportByName.put(to, new Airport(to));
+            }
+            Airport fromAirport = airportByName.get(from);
+            fromAirport.connectingToAirports.add(to);
+        }
+        Queue<String> currentFlightFrom = new LinkedList<>();
+        currentFlightFrom.add("JFK");
+        while(!currentFlightFrom.isEmpty()){
+            Airport currentAirport = airportByName.get(currentFlightFrom.poll());
+            output.add(currentAirport.airportName);
+            if (!currentAirport.connectingToAirports.isEmpty()){
+                currentFlightFrom.add(currentAirport.connectingToAirports.poll());
+            }
+        }
+        return output;
+    }
+    class Airport {
+        String airportName;
+        PriorityQueue<String> connectingToAirports;
+        Airport(String airportName){
+            this.airportName = airportName;
+            connectingToAirports = new PriorityQueue<>(new SortAirportsLexographically());
+        }
+    }
+
+    class SortAirportsLexographically implements Comparator<String>{
+        public int compare(String a, String b){
+            return a.compareTo(b);
+        }
+    }
+}
